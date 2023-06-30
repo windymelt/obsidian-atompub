@@ -109,7 +109,7 @@ class AtomPubPlugin(app: App, manifest: PluginManifest)
   def saveSettings: Future[Unit] = this.saveData(this.settings)
 }
 
-class SampleModal(app: App) extends Modal {
+class SampleModal(app: App) extends Modal(app) {
   override def onOpen(): Unit = {
     this.contentEl.setText("Wooah!!")
   }
