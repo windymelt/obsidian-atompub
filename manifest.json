@@ -1,0 +1,11 @@
+{
+    "id": "obsidian-atompub-plugin",
+    "name": "Obsidian AtomPub publishing plugin",
+    "version": "0.0.1",
+    "minAppVersion": "0.15.0",
+    "description": "This plugin is intended to publish blog entry via atompub.",
+    "author": "Windymelt",
+    "authorUrl": "https://www.3qe.us/",
+    "fundingUrl": "https://www.3qe.us/",
+    "isDesktopOnly": false
+}
