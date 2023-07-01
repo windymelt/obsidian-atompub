@@ -4,19 +4,19 @@ import scala.scalajs.js
 
 @js.native
 trait AtomPubPluginSettingsJS extends js.Object {
-  val mySetting: String = js.native
+  val xWsseHeader: String = js.native
 }
 object AtomPubPluginSettingsJS {
   // companion
-  def apply(mySetting: String) = js.Dynamic
-    .literal(mySetting = mySetting)
+  def apply(xWsseHeader: String) = js.Dynamic
+    .literal(xWsseHeader = xWsseHeader)
     .asInstanceOf[AtomPubPluginSettingsJS]
 }
-case class AtomPubPluginSettings(val mySetting: String) {
+case class AtomPubPluginSettings(val xWsseHeader: String) {
   def toJS: AtomPubPluginSettingsJS =
-    AtomPubPluginSettingsJS(mySetting = mySetting)
+    AtomPubPluginSettingsJS(xWsseHeader = xWsseHeader)
 }
 object AtomPubPluginSettings {
   def fromJS(j: AtomPubPluginSettingsJS): AtomPubPluginSettings =
-    AtomPubPluginSettings(mySetting = j.mySetting)
+    AtomPubPluginSettings(xWsseHeader = j.xWsseHeader)
 }

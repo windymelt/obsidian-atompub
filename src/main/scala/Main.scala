@@ -37,7 +37,7 @@ implicit val ec: scala.concurrent.ExecutionContext =
   scala.concurrent.ExecutionContext.global
 
 val DEFAULT_SETTINGS: AtomPubPluginSettingsJS =
-  AtomPubPluginSettingsJS(mySetting = "DEFAULT_SETTING_VAR")
+  AtomPubPluginSettingsJS(xWsseHeader = "UsernameToken ...")
 
 @JSExportTopLevel("default")
 class AtomPubPlugin(app: App, manifest: PluginManifest)
@@ -107,20 +107,23 @@ class SampleSettingTab(app: App, val plugin: AtomPubPlugin)
     this.containerEl.empty()
     val inner =
       new typings.obsidian.publishMod.global.DomElementInfo {
-        text = "Settings for my awesome plugin."
+        text =
+          "AtomPub API settings (This plugin is under active development. settings may be vanished)."
       }
     this.containerEl.createEl_h2(obsidianStrings.h2, inner)
 
     new Setting(this.containerEl)
-      .setName("Setting #1")
-      .setDesc("It's a secret")
+      .setName("X-WSSE:")
+      .setDesc(
+        "[WIP] X-WSSE header. We authenticate AtomPub API using this header."
+      )
       .addText(t =>
-        t.setPlaceholder("Enter your secret")
-          .setValue(this.plugin.settings.mySetting)
+        t.setPlaceholder("""UserName=..., PasswordDigest=..., """)
+          .setValue(this.plugin.settings.xWsseHeader)
           .onChange(v => {
             val newSettings = AtomPubPluginSettings
               .fromJS(this.plugin.settings)
-              .copy(mySetting = v)
+              .copy(xWsseHeader = v)
               .toJS
             plugin.settings = newSettings
             this.plugin.saveSettings
