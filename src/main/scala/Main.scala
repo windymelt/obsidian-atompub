@@ -36,25 +36,6 @@ import scala.scalajs.js
 implicit val ec: scala.concurrent.ExecutionContext =
   scala.concurrent.ExecutionContext.global
 
-@js.native
-trait AtomPubPluginSettingsJS extends js.Object {
-  val mySetting: String = js.native
-}
-object AtomPubPluginSettingsJS {
-  // companion
-  def apply(mySetting: String) = js.Dynamic
-    .literal(mySetting = mySetting)
-    .asInstanceOf[AtomPubPluginSettingsJS]
-}
-case class AtomPubPluginSettings(val mySetting: String) {
-  def toJS: AtomPubPluginSettingsJS =
-    AtomPubPluginSettingsJS(mySetting = mySetting)
-}
-object AtomPubPluginSettings {
-  def fromJS(j: AtomPubPluginSettingsJS): AtomPubPluginSettings =
-    AtomPubPluginSettings(mySetting = j.mySetting)
-}
-
 val DEFAULT_SETTINGS: AtomPubPluginSettingsJS =
   AtomPubPluginSettingsJS(mySetting = "DEFAULT_SETTING_VAR")
 
