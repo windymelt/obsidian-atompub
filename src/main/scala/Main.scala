@@ -67,22 +67,16 @@ class AtomPubPlugin(app: App, manifest: PluginManifest)
     for {
       _ <- this.loadSettings
     } yield {
-      println("creating ribbonIcon")
       val ribbonIconEl = this.addRibbonIcon(
         icon = "dice",
         title = "Sample Plugin",
         callback = _ => Notice("This is a notice!")
       )
-      println("adding ribbon class")
       ribbonIconEl.addClass("my-plugin-ribbon-class")
-      println("ribbon cladd added.")
 
-      println("setting statusbarItem")
       val statusBarItemEl = this.addStatusBarItem()
       statusBarItemEl.setText("Status Bar Text")
-      println("statusbarItem done")
 
-      println("adding command 1")
       this.addCommand {
         val c = Command(
           "open-sample-modal-simple",
@@ -91,9 +85,6 @@ class AtomPubPlugin(app: App, manifest: PluginManifest)
         c.callback = () => SampleModal(this.app).`open`()
         c
       }
-      println("added command 1")
-
-      println("adding command 2")
       this.addCommand {
         val c = Command("sample-editor-command", "Sample editor command")
         c.editorCallback = (e, v) => {
@@ -102,23 +93,16 @@ class AtomPubPlugin(app: App, manifest: PluginManifest)
         }
         c
       }
-      println("added command 2")
-
-      println("setting tab")
       this.addSettingTab(SampleSettingTab(this.app, this))
 
-      println("plugin loaded!")
+      println("AtomPub plugin loaded!")
     }
   }
   override def onunload(): Unit = {}
   def loadSettings: Future[Unit] = for {
-    _ <- Future { println("loading settings!") }
     setting <- this.loadData()
-    // TODO: merge setting and assign
   } yield {
     if (setting != null) {
-      // TODO: なにやら変形して設定を読み出して設定する
-      // settingはどうやらObjectで返却される。このフィールドをうまく取り出してAtomPubPluginSettingsの形にする必要がある。
       val settings = setting.asInstanceOf[AtomPubPluginSettingsJS]
       this.settings = settings
     }
@@ -138,10 +122,7 @@ class SampleModal(app: App) extends Modal(app) {
 class SampleSettingTab(app: App, val plugin: AtomPubPlugin)
     extends PluginSettingTab(app, plugin) {
 
-  println("constructing samplesettingtab")
-
   override def display(): Any = {
-    println("displaying")
     this.containerEl.empty()
     val inner =
       new typings.obsidian.publishMod.global.DomElementInfo {
@@ -156,13 +137,11 @@ class SampleSettingTab(app: App, val plugin: AtomPubPlugin)
         t.setPlaceholder("Enter your secret")
           .setValue(this.plugin.settings.mySetting)
           .onChange(v => {
-            println(s"secret: $v")
             val newSettings = AtomPubPluginSettings
               .fromJS(this.plugin.settings)
               .copy(mySetting = v)
               .toJS
             plugin.settings = newSettings
-            println(s"new setting: $newSettings")
             this.plugin.saveSettings
           })
       )
