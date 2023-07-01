@@ -30,22 +30,38 @@ import typings.codemirror.codemirrorStrings.click
 import typings.obsidian.mod.PluginManifest
 import scala.scalajs.js.Promise
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+//import scala.scalajs.js.annotation.JSExportAll
+import scala.scalajs.js
 
 implicit val ec: scala.concurrent.ExecutionContext =
   scala.concurrent.ExecutionContext.global
 
-trait AtomPubPluginSettings {
-  var mySetting: String
+@js.native
+trait AtomPubPluginSettingsJS extends js.Object {
+  val mySetting: String = js.native
+}
+object AtomPubPluginSettingsJS {
+  // companion
+  def apply(mySetting: String) = js.Dynamic
+    .literal(mySetting = mySetting)
+    .asInstanceOf[AtomPubPluginSettingsJS]
+}
+case class AtomPubPluginSettings(val mySetting: String) {
+  def toJS: AtomPubPluginSettingsJS =
+    AtomPubPluginSettingsJS(mySetting = mySetting)
+}
+object AtomPubPluginSettings {
+  def fromJS(j: AtomPubPluginSettingsJS): AtomPubPluginSettings =
+    AtomPubPluginSettings(mySetting = j.mySetting)
 }
 
-val DEFAULT_SETTINGS: AtomPubPluginSettings = new {
-  var mySetting = "DEFAULT_SETTING_VAR"
-}
+val DEFAULT_SETTINGS: AtomPubPluginSettingsJS =
+  AtomPubPluginSettingsJS(mySetting = "DEFAULT_SETTING_VAR")
 
 @JSExportTopLevel("default")
 class AtomPubPlugin(app: App, manifest: PluginManifest)
     extends Plugin(app, manifest) {
-  var settings: AtomPubPluginSettings = DEFAULT_SETTINGS
+  var settings: AtomPubPluginSettingsJS = DEFAULT_SETTINGS
 
   override def onload(): Unit = {
     for {
@@ -102,8 +118,9 @@ class AtomPubPlugin(app: App, manifest: PluginManifest)
   } yield {
     if (setting != null) {
       // TODO: なにやら変形して設定を読み出して設定する
-      // val setting1 = setting.asInstanceOf[scalajs.js.Object]
-      // this.settings = setting.asInstanceOf[AtomPubPluginSettings]
+      // settingはどうやらObjectで返却される。このフィールドをうまく取り出してAtomPubPluginSettingsの形にする必要がある。
+      val settings = setting.asInstanceOf[AtomPubPluginSettingsJS]
+      this.settings = settings
     }
   }
   def saveSettings: Future[Unit] = this.saveData(this.settings)
@@ -140,7 +157,12 @@ class SampleSettingTab(app: App, val plugin: AtomPubPlugin)
           .setValue(this.plugin.settings.mySetting)
           .onChange(v => {
             println(s"secret: $v")
-            this.plugin.settings.mySetting = v
+            val newSettings = AtomPubPluginSettings
+              .fromJS(this.plugin.settings)
+              .copy(mySetting = v)
+              .toJS
+            plugin.settings = newSettings
+            println(s"new setting: $newSettings")
             this.plugin.saveSettings
           })
       )
