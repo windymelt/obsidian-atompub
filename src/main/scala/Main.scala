@@ -37,7 +37,10 @@ implicit val ec: scala.concurrent.ExecutionContext =
   scala.concurrent.ExecutionContext.global
 
 val DEFAULT_SETTINGS: AtomPubPluginSettingsJS =
-  AtomPubPluginSettingsJS(xWsseHeader = "UsernameToken ...")
+  AtomPubPluginSettingsJS(
+    xWsseHeader = "UsernameToken ...",
+    apiUrl = "https://blog.example.com/$username/$blogDomain/atom/entry"
+  )
 
 @JSExportTopLevel("default")
 class AtomPubPlugin(app: App, manifest: PluginManifest)
@@ -119,7 +122,6 @@ class SampleSettingTab(app: App, val plugin: AtomPubPlugin)
       )
       .addText(t =>
         t.setPlaceholder("""UserName=..., PasswordDigest=..., """)
-          .setValue(this.plugin.settings.xWsseHeader)
           .onChange(v => {
             val newSettings = AtomPubPluginSettings
               .fromJS(this.plugin.settings)
@@ -128,6 +130,25 @@ class SampleSettingTab(app: App, val plugin: AtomPubPlugin)
             plugin.settings = newSettings
             this.plugin.saveSettings
           })
+          .setValue(this.plugin.settings.xWsseHeader)
+      )
+
+    new Setting(this.containerEl)
+      .setName("API URL")
+      .setDesc(
+        "[WIP] AtomPub API URL. The plugin will POST yarkdown to this endpoint."
+      )
+      .addText(t =>
+        t.setPlaceholder(
+          """https://blog.example.com/$username/$blogDomain/atom/entry"""
+        ).onChange(v => {
+          val newSettings = AtomPubPluginSettings
+            .fromJS(this.plugin.settings)
+            .copy(apiUrl = v)
+            .toJS
+          plugin.settings = newSettings
+          this.plugin.saveSettings
+        }).setValue(this.plugin.settings.apiUrl)
       )
   }
 }
